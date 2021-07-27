@@ -35,15 +35,40 @@ def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDel
     i2 = background_y
     while i <= SCREEN_WIDTH:
         while i2 <= SCREEN_HEIGHT:
-            screen.blit(background, (i, i2))
+            try:
+                screen.blit(background, (i, i2))
+            except:
+                pass
             i2 += BACKGROUND_HEIGHT
         i2 = background_y
         i += BACKGROUND_WIDTH
     draw_player(mouse, player, screen)
     draw_bullet(SCREEN_WIDTH, SCREEN_HEIGHT, screen, xDelta, yDelta)
     draw_enemy(enemyList, screen, player.position_x, player.position_y, xDelta, yDelta)
-    
 
+
+def do_not_draw_bullet(xDelta, yDelta):
+    for bullet_object in bullet.bulletList:
+        bullet_object.changex -= xDelta
+        bullet_object.changey -= yDelta
+        if bullet_object.locationx > 800 or bullet_object.locationx < 0 or bullet_object.locationy >\
+                600 or bullet_object.locationy < 0:
+            bullet.bulletList.remove(bullet_object)
+        else:
+            bullet_object.set_location(bullet_object.locationx + bullet_object.changex, bullet_object.locationy +
+                                       bullet_object.changey)
+        bullet_object.changex += xDelta
+        bullet_object.changey += yDelta
+
+
+def do_not_draw_enemy(enemyList, xDelta, yDelta, player):
+    for e in enemyList:
+        e.move(player.position_x, player.position_y, xDelta, yDelta)
+
+
+def do_not_draw(xDelta, yDelta, enemyList, player):
+    do_not_draw_bullet(xDelta, yDelta)
+    do_not_draw_enemy(enemyList, xDelta, yDelta, player)
 
 
 def draw_pause_menu(screen, enemyList, background_x, background_y, background, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT):
@@ -51,7 +76,10 @@ def draw_pause_menu(screen, enemyList, background_x, background_y, background, B
     i2 = background_y
     while i <= SCREEN_WIDTH:
         while i2 <= SCREEN_HEIGHT:
-            screen.blit(background, (i, i2))
+            try:
+                screen.blit(background, (i, i2))
+            except:
+                pass
             i2 += BACKGROUND_HEIGHT
         i2 = background_y
         i += BACKGROUND_WIDTH

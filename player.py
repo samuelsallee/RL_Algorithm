@@ -4,20 +4,18 @@ from header import *
 
 class Player:
 
-    def __init__(self, sprite, SCREEN_WIDTH, SCREEN_HEIGHT):
+    def __init__(self, sprite=None, SCREEN_WIDTH=800, SCREEN_HEIGHT=600):
         self.player_size = (57, 40)  # changing this will fuck up a bunch of things
         self.width = self.player_size[0]
         self.height = self.player_size[1]
-        self.playerImage = sprite
-        self.image_copy = sprite
+
         self.direction: int = 0
-        self.position_x: int = SCREEN_WIDTH/2
-        self.position_y: int = SCREEN_HEIGHT/2
+        self.position_x = SCREEN_WIDTH/2
+        self.position_y = SCREEN_HEIGHT/2
         self.health: float = 100
         self.speed: int = 5
         self.overall_position_x: int = 0
         self.overall_position_y: int = 0
-        self.player_center = (self.position_x-int(self.image_copy.get_width()/2), self.position_y-int(self.image_copy.get_height()/2))
         self.hypo: float = 0
         self.idle = list()
         self.walking = list()
@@ -26,6 +24,15 @@ class Player:
         self.idle_counter: int = 0
         self.walking_counter: int = 0
         self.health_total = self.health
+
+        if sprite is not None:
+            self.draw_me = True
+            self.playerImage = sprite
+            self.image_copy = sprite
+            self.player_center = (self.position_x-int(self.image_copy.get_width()/2), self.position_y-int(self.image_copy.get_height()/2))
+        else:
+            self.draw_me = False
+            self.player_center = (400, 300)
 
     def set_speed(self, speed):
         self.speed = speed
@@ -45,13 +52,16 @@ class Player:
         self.overall_position_y += change_in_y
 
     def draw_player(self, angle, screen):
-        dy = angle % 360 - 180
-        self.image_copy = pygame.transform.rotate(self.playerImage, dy)
-        self.player_center = (self.position_x-int(self.image_copy.get_width()/2), self.position_y-int(self.image_copy.get_height()/2))
-        screen.blit(self.image_copy, self.player_center)
-        pygame.draw.rect(screen, (255, 0, 0), (self.position_x - self.width/2, self.position_y - self.height/2 - 20, 50, 10))
-        pygame.draw.rect(screen, (0, 128, 0), (self.position_x - self.width/2, self.position_y - self.height/2 - 20, 50 * self.health/self.health_total, 10))
-
+        if self.draw_me:
+            dy = angle % 360 - 180
+            self.image_copy = pygame.transform.rotate(self.playerImage, dy)
+            self.player_center = (self.position_x-int(self.image_copy.get_width()/2), self.position_y-int(self.image_copy.get_height()/2))
+            try:
+                screen.blit(self.image_copy, self.player_center)
+                pygame.draw.rect(screen, (255, 0, 0), (self.position_x - self.width/2, self.position_y - self.height/2 - 20, 50, 10))
+                pygame.draw.rect(screen, (0, 128, 0), (self.position_x - self.width/2, self.position_y - self.height/2 - 20, 50 * self.health/self.health_total, 10))
+            except:
+                pass
     def initialize_player_idle_with_handgun(self):
         self.idle.clear()
         self.idle.append(pygame.transform.scale(pygame.image.load("idle_player_sprites\survivor-idle_handgun_0.png"), self.player_size))

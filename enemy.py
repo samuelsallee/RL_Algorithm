@@ -30,13 +30,19 @@ class enemy:
         self.frame_at_last_hit: int = 0
 
     def draw_pause(self, screen):
-        screen.blit(self.static, self.center)
+        try:
+            screen.blit(self.static, self.center)
+        except:
+            pass
         
     def draw(self, screen, player_x, player_y, xDelta, yDelta):
         self.move(player_x, player_y, xDelta, yDelta)
         if self.velocity > 0:
-            self.center =  (self.x - self.width/2, self.y-self.height/2)
-            screen.blit(self.static, self.center)
+            self.center = (self.x - self.width/2, self.y-self.height/2)
+            try:
+                screen.blit(self.static, self.center)
+            except:
+                pass
         self.hitbox = (self.x + 30, self.y + 30, 40, 90)
         pygame.draw.rect(screen, (255, 0, 0), (self.x - self.width/2, self.y - self.height/2, 50, 10))
         pygame.draw.rect(screen, (0, 128, 0), (self.x - self.width/2, self.y - self.height/2, 50 * self.health/self.health_total, 10))
@@ -50,5 +56,8 @@ class enemy:
         self.x += enemy_delta_x - xDelta
         self.box_y = (self.y - self.height/2, self.y + self.height/2)
         self.box_x = (self.x - self.width/2, self.x + self.width/2)
+        if self.velocity > 0:
+            self.center = (self.x - self.width/2, self.y-self.height/2)
+
 
 #

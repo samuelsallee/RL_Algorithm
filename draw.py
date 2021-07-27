@@ -15,12 +15,15 @@ def draw_bullet(SCREEN_WIDTH, SCREEN_HEIGHT, screen, xDelta, yDelta):
                 SCREEN_HEIGHT or bullet_object.locationy < 0:
             bullet.bulletList.remove(bullet_object)
         else:
-            bullet_copy = pygame.transform.rotate(bullet_object.image, bullet_object.direction)
-            screen.blit(bullet_copy, (bullet_object.locationx - int(bullet_copy.get_width()/2) + bullet_object.changex,
-                                      int(bullet_object.locationy - bullet_copy.get_height()/2) +
-                                      bullet_object.changey))
-            bullet_object.set_location(bullet_object.locationx + bullet_object.changex, bullet_object.locationy +
-                                       bullet_object.changey)
+            try:
+                bullet_copy = pygame.transform.rotate(bullet_object.image, bullet_object.direction)
+                screen.blit(bullet_copy, (bullet_object.locationx - int(bullet_copy.get_width()/2) + bullet_object.changex,
+                                          int(bullet_object.locationy - bullet_copy.get_height()/2) +
+                                          bullet_object.changey))
+                bullet_object.set_location(bullet_object.locationx + bullet_object.changex, bullet_object.locationy +
+                                           bullet_object.changey)
+            except:
+                pass
         bullet_object.changex += xDelta
         bullet_object.changey += yDelta
 
@@ -87,19 +90,25 @@ def draw_pause_menu(screen, enemyList, background_x, background_y, background, B
     for enemy_object in enemyList:
         enemy_object.draw_pause(screen)
     for bullet_object in bullet.bulletList:
-        bullet_copy = pygame.transform.rotate(bullet_object.image, bullet_object.direction)
-        screen.blit(bullet_copy, (bullet_object.locationx, bullet_object.locationy))
+        try:
+            bullet_copy = pygame.transform.rotate(bullet_object.image, bullet_object.direction)
+            screen.blit(bullet_copy, (bullet_object.locationx, bullet_object.locationy))
+        except:
+            pass
 
 
 def draw_game_over_screen(screen, yes_tuple, no_tuple, gameOverFont, gameOverFont2, gameOverFont3, color1, color2):
     screen.fill([255, 0, 0])
     pygame.draw.rect(screen, color1, yes_tuple)
     pygame.draw.rect(screen, color2, no_tuple)
-    screen.blit(gameOverFont.render("GAME OVER NERD", True, (0, 0, 0)), (50, 100))
-    screen.blit(gameOverFont2.render("YOU SUCK SHIT", True, (0, 0, 0)), (250, 220))
-    screen.blit(gameOverFont3.render("Would you like to try again?", True, (0, 0, 0)), (240, 300))
-    screen.blit(gameOverFont3.render("Yes", True, (0, 0, 0)), (270, 350))
-    screen.blit(gameOverFont3.render("No", True, (0, 0, 0)), (500, 350))
+    try:
+        screen.blit(gameOverFont.render("GAME OVER NERD", True, (0, 0, 0)), (50, 100))
+        screen.blit(gameOverFont2.render("YOU SUCK SHIT", True, (0, 0, 0)), (250, 220))
+        screen.blit(gameOverFont3.render("Would you like to try again?", True, (0, 0, 0)), (240, 300))
+        screen.blit(gameOverFont3.render("Yes", True, (0, 0, 0)), (270, 350))
+        screen.blit(gameOverFont3.render("No", True, (0, 0, 0)), (500, 350))
+    except:
+        pass
 
 
 def draw_useful_information(screen, font, score, wave, money, player_one):
@@ -108,8 +117,11 @@ def draw_useful_information(screen, font, score, wave, money, player_one):
     money_text = font.render("Money: $" + str("%.2f" % money), True, (0, 0, 0))
     overall_position_text = font.render(str(player_one.overall_position_x) + ", " + str(player_one.overall_position_y),
                                         True, (0, 0, 0))
-    screen.blit(score_text, (2, 2))
-    screen.blit(wave_text, (screen.get_width() - 130, 2))
-    screen.blit(money_text, (2, 32))
-    screen.blit(overall_position_text, (screen.get_width() / 2 - 50, 2))
+    try:
+        screen.blit(score_text, (2, 2))
+        screen.blit(wave_text, (screen.get_width() - 130, 2))
+        screen.blit(money_text, (2, 32))
+        screen.blit(overall_position_text, (screen.get_width() / 2 - 50, 2))
+    except:
+        pass
 

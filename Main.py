@@ -31,7 +31,8 @@ for i in range(-x, x):
 
 for episode in range(EPISODES):
     time_running = 0
-
+    if episode == 12537:
+        input()
     if episode % SHOW_EVERY == 0:
         game = Yooter.Game_Class(True)
     else:

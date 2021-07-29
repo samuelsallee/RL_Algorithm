@@ -82,10 +82,10 @@ class Game_Class:
                             self.money += enemy_object.health_total / 10
                             try:
                                 self.enemyList.remove(enemy_object)
+                                self.enemies_killed += 1
                             except:
                                 pass
                             self.score = self.score + 5  # increases self.score by 5 for every kill
-                            self.enemies_killed += 1
 
             player_to_enemy_distance_tuple = (
                 person1.player_center[0] - enemy_object.center[0], person1.player_center[1] - enemy_object.center[1])
@@ -148,26 +148,14 @@ class Game_Class:
         elif self.action == 4:
             self.yDelta = 5
         elif self.action == 5:
-            self.xDelta = -5
-            self.yDelta = -5
-        elif self.action == 6:
-            self.xDelta = -5
-            self.yDelta = 5
-        elif self.action == 7:
-            self.xDelta = 5
-            self.yDelta = -5
-        elif self.action == 8:
-            self.xDelta = 5
-            self.yDelta = 5
-        elif self.action == 9:
             self.rotation -= 12
             self.xDelta = 0
             self.yDelta = 0
-        elif self.action == 10:
+        elif self.action == 6:
             self.rotation += 12
             self.xDelta = 0
             self.yDelta = 0
-        elif self.action == 11:
+        elif self.action == 7:
             self.xDelta = 0
             self.yDelta = 0
             self.direct = self.rotation % 360 - 180

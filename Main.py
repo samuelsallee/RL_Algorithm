@@ -9,12 +9,16 @@ EPISODES = 1
 MOVE_PENALTY = .00001  # feel free to tinker with these!
 ENEMY_PENALTY = 6  # feel free to tinker with these!
 KILL_REWARD = 5000  # feel free to tinker with these!
-epsilon = 0  # randomness
-EPS_END = 1 #EPISODES // 2
+if EPISODES == 1:
+    epsilon = 0  # randomness
+    EPS_END = 1
+else:
+    epsilon = .5
+    EPS_END = EPISODES // 2
 EPS_DECAY = epsilon / EPS_END
 SHOW_EVERY = 100  # how often to play through env visually.
 
-start_q_table = 'qtable-1627566717.pickle'  # if we have a pickled Q table, we'll put the filename of it here.
+start_q_table = 'qtable-1627649096.pickle'  # if we have a pickled Q table, we'll put the filename of it here.
 
 LEARNING_RATE = 0.1
 DISCOUNT = 0.95
@@ -51,6 +55,7 @@ for episode in range(EPISODES):
     game.step()
     while game.running:
         closest_enemy = [9999999, (0, 0, game.rotation % 360)]
+
         if len(game.enemyList) != 0:
             for enemy in game.enemyList:
                 distance = math.sqrt((enemy.x - 400) ** 2 + (enemy.y - 300) ** 2)
@@ -83,18 +88,31 @@ for episode in range(EPISODES):
         if game.enemies_killed > 0:
             reward = KILL_REWARD
             game.enemies_killed = 0
+            time_running = 0
         if not game.running:
             reward = -ENEMY_PENALTY
 
         try:
-            new_obs = (int(closest_enemy[1][0] // 25), int(closest_enemy[1][1] // 25), game.rotation % 360)  # new observation
+            closest_enemy = [9999999, (0, 0, game.rotation % 360)]
+
+            if len(game.enemyList) != 0:
+                for enemy in game.enemyList:
+                    distance = math.sqrt((enemy.x - 400) ** 2 + (enemy.y - 300) ** 2)
+                    if distance < closest_enemy[0]:
+                        closest_enemy[0] = distance
+                        closest_enemy[1] = (enemy.x, enemy.y, game.rotation % 360)
+            else:
+                game.step()
+                for enemy in game.enemyList:
+                    distance = math.sqrt((enemy.x - 400) ** 2 + (enemy.y - 300) ** 2)
+                    if distance < closest_enemy[0]:
+                        closest_enemy[0] = distance
+                        closest_enemy[1] = (enemy.x, enemy.y, game.rotation % 360)
+
+            new_obs = (int(closest_enemy[1][0] // 25), int(closest_enemy[1][1] // 25), game.rotation % 360)
             max_future_q = np.max(q_table[new_obs])  # max Q value for this new obs
             current_q = q_table[obs][game.action]  # current Q for our chosen action
-            if reward == KILL_REWARD:
-                new_q = KILL_REWARD
-                time_running = 0
-            else:
-                new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
+            new_q = (1 - LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
             q_table[obs][game.action] = new_q
         except:
             pass
@@ -107,7 +125,6 @@ plt.plot([i for i in range(len(moving_avg))], moving_avg)
 plt.ylabel(f"Reward {SHOW_EVERY}ma")
 plt.xlabel("episode #")
 plt.show()
-print(q_table)
-
-with open(f"qtable-{int(time.time())}.pickle", "wb") as f:
-    pickle.dump(q_table, f)
+if EPISODES != 1:
+    with open(f"qtable-{int(time.time())}.pickle", "wb") as f:
+        pickle.dump(q_table, f)

@@ -6,7 +6,7 @@ import player
 
 
 class Game_Class:
-    def __init__(self, show):
+    def __init__(self, show, eight_lines=False):
         self.testing = 0
         self.screen_WIDTH: int = 800
         self.screen_HEIGHT: int = 600
@@ -70,6 +70,7 @@ class Game_Class:
         self.bullet_speed: int = 10
         self.number_of_frames_shown: int = 0
         self.rotation = 0
+        self.eight_lines = eight_lines
 
     def hit_logic(self, person1):
         for enemy_object in self.enemyList:
@@ -129,7 +130,7 @@ class Game_Class:
             draw.draw(self.rotation, self.screen_WIDTH, self.screen_HEIGHT, self.screen, self.enemyList,
                       self.background, self.xDelta, self.yDelta,
                       self.background_x, self.background_y, self.background_WIDTH, self.background_HEIGHT,
-                      self.player_one)
+                      self.player_one, self.eight_lines)
         else:
             draw.do_not_draw(self.xDelta, self.yDelta, self.enemyList, self.player_one)
 

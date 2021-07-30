@@ -1,7 +1,8 @@
-from header import*
+from header import *
 import bullet
 import enemy
 import menu
+
 
 def draw_player(angle, player_object, screen):
     player_object.draw_player(angle, screen)
@@ -11,15 +12,16 @@ def draw_bullet(SCREEN_WIDTH, SCREEN_HEIGHT, screen, xDelta, yDelta):
     for bullet_object in bullet.bulletList:
         bullet_object.changex -= xDelta
         bullet_object.changey -= yDelta
-        if bullet_object.locationx > SCREEN_WIDTH or bullet_object.locationx < 0 or bullet_object.locationy >\
+        if bullet_object.locationx > SCREEN_WIDTH or bullet_object.locationx < 0 or bullet_object.locationy > \
                 SCREEN_HEIGHT or bullet_object.locationy < 0:
             bullet.bulletList.remove(bullet_object)
         else:
             try:
                 bullet_copy = pygame.transform.rotate(bullet_object.image, bullet_object.direction)
-                screen.blit(bullet_copy, (bullet_object.locationx - int(bullet_copy.get_width()/2) + bullet_object.changex,
-                                          int(bullet_object.locationy - bullet_copy.get_height()/2) +
-                                          bullet_object.changey))
+                screen.blit(bullet_copy,
+                            (bullet_object.locationx - int(bullet_copy.get_width() / 2) + bullet_object.changex,
+                             int(bullet_object.locationy - bullet_copy.get_height() / 2) +
+                             bullet_object.changey))
                 bullet_object.set_location(bullet_object.locationx + bullet_object.changex, bullet_object.locationy +
                                            bullet_object.changey)
             except:
@@ -33,7 +35,8 @@ def draw_enemy(enemyList, screen, player_x, player_y, xDelta, yDelta):
         enemy_object.draw(screen, player_x, player_y, xDelta, yDelta)
 
 
-def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDelta, yDelta, background_x, background_y, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, player):
+def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDelta, yDelta, background_x, background_y,
+         BACKGROUND_WIDTH, BACKGROUND_HEIGHT, player, eight_lines):
     i = background_x
     i2 = background_y
     while i <= SCREEN_WIDTH:
@@ -46,6 +49,17 @@ def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDel
         i2 = background_y
         i += BACKGROUND_WIDTH
     draw_player(mouse, player, screen)
+    '''
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [400, 600])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [400, 0])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 300])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 300])
+
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 0])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 600])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 600])
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 0])'''
+
     draw_bullet(SCREEN_WIDTH, SCREEN_HEIGHT, screen, xDelta, yDelta)
     draw_enemy(enemyList, screen, player.position_x, player.position_y, xDelta, yDelta)
 
@@ -54,7 +68,7 @@ def do_not_draw_bullet(xDelta, yDelta):
     for bullet_object in bullet.bulletList:
         bullet_object.changex -= xDelta
         bullet_object.changey -= yDelta
-        if bullet_object.locationx > 800 or bullet_object.locationx < 0 or bullet_object.locationy >\
+        if bullet_object.locationx > 800 or bullet_object.locationx < 0 or bullet_object.locationy > \
                 600 or bullet_object.locationy < 0:
             bullet.bulletList.remove(bullet_object)
         else:
@@ -74,7 +88,8 @@ def do_not_draw(xDelta, yDelta, enemyList, player):
     do_not_draw_enemy(enemyList, xDelta, yDelta, player)
 
 
-def draw_pause_menu(screen, enemyList, background_x, background_y, background, BACKGROUND_WIDTH, BACKGROUND_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT):
+def draw_pause_menu(screen, enemyList, background_x, background_y, background, BACKGROUND_WIDTH, BACKGROUND_HEIGHT,
+                    SCREEN_WIDTH, SCREEN_HEIGHT):
     i = background_x
     i2 = background_y
     while i <= SCREEN_WIDTH:
@@ -86,7 +101,7 @@ def draw_pause_menu(screen, enemyList, background_x, background_y, background, B
             i2 += BACKGROUND_HEIGHT
         i2 = background_y
         i += BACKGROUND_WIDTH
-    #menu.loopMenu(screen, enemyList, background_x, background_y, background)
+    # menu.loopMenu(screen, enemyList, background_x, background_y, background)
     for enemy_object in enemyList:
         enemy_object.draw_pause(screen)
     for bullet_object in bullet.bulletList:
@@ -124,4 +139,3 @@ def draw_useful_information(screen, font, score, wave, money, player_one):
         screen.blit(overall_position_text, (screen.get_width() / 2 - 50, 2))
     except:
         pass
-

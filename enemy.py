@@ -5,7 +5,7 @@ class enemy:
 
     def __init__(self, x, y, width, height, vel, end, health):
         EliteKnight = pygame.transform.scale(pygame.image.load("Eliteknightshotgun.png"), (64, 64))
-        Axer = pygame.transform.scale(pygame.image.load("Axer.png"),(80,80))
+        Axer = pygame.transform.scale(pygame.image.load("Axer.png"),(64,64))
         Enemy_list = (EliteKnight,Axer)
         Enemy = random.choice(Enemy_list)
         self.static = Enemy
@@ -46,7 +46,7 @@ class enemy:
         self.hitbox = (self.x + 30, self.y + 30, 40, 90)
         pygame.draw.rect(screen, (255, 0, 0), (self.x - self.width/2, self.y - self.height/2, 50, 10))
         pygame.draw.rect(screen, (0, 128, 0), (self.x - self.width/2, self.y - self.height/2, 50 * self.health/self.health_total, 10))
-        #pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, self.width, self.height), 2)  # drawing hitbox right now
+        #pygame.draw.rect(screen, (255, 0, 0), (self.x-32, self.y-32, self.width, self.height), 2)  # drawing hitbox right now
 
     def move(self, player_x, player_y, xDelta, yDelta):
         radian = math.atan2((self.y - player_y), (self.x - player_x))

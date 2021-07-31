@@ -81,7 +81,7 @@ if EPISODES == 1:
     epsilon = 0
     EPS_END = 1
 else:
-    epsilon = .5  # randomness
+    epsilon = .25  # randomness
     EPS_END = EPISODES // 2
 EPS_DECAY = epsilon / EPS_END
 SHOW_EVERY = 100  # how often to play through env visually.
@@ -92,7 +92,7 @@ eight_lines = [((400, 300), (400, 600)), ((400, 300), (400, 0)), ((400, 300), (1
                ((400, 300), (100, 0)), ((400, 300), (700, 600)), ((400, 300), (100, 600)), ((400, 300), (700, 0))]
 
 q_table = {}
-start_q_table = '8qtable-1627647844.pickle'  # if we have a pickled Q table, we'll put the filename of it here.
+start_q_table = '8qtable-1627658174.pickle'  # if we have a pickled Q table, we'll put the filename of it here.
 
 if start_q_table is None:
     for line in eight_lines:

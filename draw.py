@@ -49,7 +49,7 @@ def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDel
         i2 = background_y
         i += BACKGROUND_WIDTH
     draw_player(mouse, player, screen)
-    '''
+
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [400, 600])
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [400, 0])
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 300])
@@ -58,7 +58,7 @@ def draw(mouse, SCREEN_WIDTH, SCREEN_HEIGHT, screen, enemyList, background, xDel
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 0])
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 600])
     pygame.draw.line(screen, (255, 255, 255), [400, 300], [100, 600])
-    pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 0])'''
+    pygame.draw.line(screen, (255, 255, 255), [400, 300], [700, 0])
 
     draw_bullet(SCREEN_WIDTH, SCREEN_HEIGHT, screen, xDelta, yDelta)
     draw_enemy(enemyList, screen, player.position_x, player.position_y, xDelta, yDelta)

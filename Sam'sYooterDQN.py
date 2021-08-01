@@ -5,7 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Conv2D, MaxPooling2D, Activation, Flatten, RNN, InputLayer
+from keras.layers import Dense, Dropout, Conv1D, MaxPooling2D, Activation, Flatten, RNN, InputLayer
 from keras.optimizers import adam_v2
 from keras.callbacks import TensorBoard
 import tensorflow as tf
@@ -59,11 +59,12 @@ class DQNAgent:
     def create_model(self):
         model = Sequential()
 
-        model.add(InputLayer(input_shape=(100,2), batch_size=1))
+        model.add(InputLayer(input_shape=(100, 2), batch_size=1))
+
         model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
         model.add(Dense(16, activation='softmax'))
-
+        model.add(Flatten())
         model.add(Dense(POSSIBLE_ACTIONS, activation='linear'))  # ACTION_SPACE_SIZE = how many choices (9)
         model.compile(loss="mse", optimizer=adam_v2.Adam(learning_rate=0.001), metrics=['accuracy'])
         return model

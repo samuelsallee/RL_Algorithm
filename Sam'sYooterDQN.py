@@ -1,27 +1,22 @@
-# set game.rotation to %360
 import os
-
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import numpy as np
 
+import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Conv1D, MaxPooling2D, Activation, Flatten, RNN, InputLayer
+from keras.layers import Dense, Flatten, InputLayer
 from keras.optimizers import adam_v2
-from keras.callbacks import TensorBoard
-import tensorflow as tf
 from collections import deque
 import time
 import random
-from PIL import Image
-import cv2
 import Yooter
+import matplotlib.pyplot as plt
 
 POSSIBLE_ACTIONS = 12
 
 DISCOUNT = 0.99
 REPLAY_MEMORY_SIZE = 50_000  # How many last steps to keep for model training
 MIN_REPLAY_MEMORY_SIZE = 1_000  # Minimum number of steps in a memory to start training
-MINIBATCH_SIZE = 16  # How many steps (samples) to use for training
+MINIBATCH_SIZE = 32  # How many steps (samples) to use for training
 UPDATE_TARGET_EVERY = 5  # Terminal states (end of episodes)
 MODEL_NAME = '2x256'
 MEMORY_FRACTION = 0.20
@@ -30,7 +25,8 @@ MOVEMENT_PENALTY = -1
 DEATH_PENALTY = -6
 
 # Environment settings
-EPISODES = 100
+EPISODES = 5000
+SHOW_EVERY = 100
 
 # Exploration settings
 epsilon = 1  # not a constant, going to be decayed
@@ -59,13 +55,13 @@ class DQNAgent:
     def create_model(self):
         model = Sequential()
 
-        model.add(InputLayer(input_shape=(100, 2), batch_size=1))
+        model.add(InputLayer(input_shape=(100, 2)))
 
         model.add(Dense(32, activation='relu'))
         model.add(Dense(32, activation='relu'))
-        model.add(Dense(16, activation='softmax'))
+        model.add(Dense(16, activation='relu'))
         model.add(Flatten())
-        model.add(Dense(POSSIBLE_ACTIONS, activation='linear'))  # ACTION_SPACE_SIZE = how many choices (9)
+        model.add(Dense(POSSIBLE_ACTIONS, activation='softmax'))  # ACTION_SPACE_SIZE = how many choices (9)
         model.compile(loss="mse", optimizer=adam_v2.Adam(learning_rate=0.001), metrics=['accuracy'])
         return model
 
@@ -84,13 +80,26 @@ class DQNAgent:
         minibatch = random.sample(self.replay_memory, MINIBATCH_SIZE)
 
         # Get current states from minibatch, then query NN model for Q values
-        current_states = np.array([transition[0] for transition in minibatch]) / 255
+        current_states = np.array([transition[0] for transition in minibatch])
         current_qs_list = self.model.predict(current_states)
+
+        '''currrent_qs_list = []
+        for state in current_states:
+            pre = self.target_model.predict(state.reshape(-1, *state.shape))
+            currrent_qs_list.append(pre[0])
+        current_qs_list = np.array(currrent_qs_list)'''
 
         # Get future states from minibatch, then query NN model for Q values
         # When using target network, query it, otherwise main network should be queried
-        new_current_states = np.array([transition[3] for transition in minibatch]) / 255
+        new_current_states = np.array([transition[3] for transition in minibatch])
         future_qs_list = self.target_model.predict(new_current_states)
+
+        '''future_qs_list = []
+        for state in new_current_states:
+            pre = self.target_model.predict(state.reshape(-1, *state.shape))
+            future_qs_list.append(pre[0])
+        future_qs_list = np.array(future_qs_list)'''
+
 
         X = []
         y = []
@@ -129,14 +138,12 @@ class DQNAgent:
 
 agent = DQNAgent()
 episode_rewards = []
-current_state = []
-new_state = []
+state_shape = []
 for _ in range(100):
-    current_state.append([0, 0])
-    new_state.append([0, 0])
+    state_shape.append([0, 0])
 
-current_state = np.array(current_state)
-new_state = np.array(new_state)
+state_shape = np.array(state_shape)
+
 for episode in range(EPISODES):
     time_without_kill = 0
     if EPISODES == 1:
@@ -151,17 +158,18 @@ for episode in range(EPISODES):
 
     while game.running:
         reward = 0
-        current_state[0][0] = game.rotation
+        current_state = state_shape.copy()
+        current_state[0][0] = game.rotation%360
         if len(game.enemyList) == 0:
             game.step()
         j = 1
         for enemy in game.enemyList:
-            current_state[j][0] = enemy.x
-            current_state[j][1] = enemy.y
+            try:
+                current_state[j][0] = enemy.x
+                current_state[j][1] = enemy.y
+            except Exception as e:
+                print(e)
             j += 1
-        for i in range(j, 100):
-            current_state[i][0] = 0
-            current_state[i][1] = 0
 
         if random.random() > epsilon:
             game.action = agent.get_action(current_state)
@@ -170,15 +178,16 @@ for episode in range(EPISODES):
 
         game.step()
 
-        new_state[0][0] = game.rotation
+        new_state = state_shape.copy()
+        new_state[0][0] = game.rotation % 360
         j = 1
         for enemy in game.enemyList:
-            new_state[j][0] = enemy.x
-            new_state[j][1] = enemy.y
+            try:
+                new_state[j][0] = enemy.x
+                new_state[j][1] = enemy.y
+            except:
+                pass
             j += 1
-        for i in range(j, 100):
-            new_state[i][0] = 0
-            new_state[i][1] = 0
 
         if time_without_kill >= 1000:
             game.running = False
@@ -204,3 +213,10 @@ min_reward = min(episode_rewards)
 average_reward = sum(episode_rewards) // len(episode_rewards)
 agent.model.save(
     f'models/{MODEL_NAME}__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__{int(time.time())}.model')
+
+moving_avg = np.convolve(episode_rewards, np.ones((SHOW_EVERY,)) / SHOW_EVERY, mode='valid')
+
+plt.plot([i for i in range(len(moving_avg))], moving_avg)
+plt.ylabel(f"Reward {SHOW_EVERY}ma")
+plt.xlabel("episode #")
+plt.show()

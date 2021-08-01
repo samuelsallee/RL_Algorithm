@@ -149,14 +149,26 @@ class Game_Class:
         elif self.action == 4:
             self.yDelta = 5
         elif self.action == 5:
-            self.rotation -= 12
-            self.xDelta = 0
-            self.yDelta = 0
+            self.xDelta = 5
+            self.yDelta = 5
         elif self.action == 6:
-            self.rotation += 12
+            self.xDelta = -5
+            self.yDelta = 5
+        elif self.action == 7:
+            self.xDelta = 5
+            self.yDelta = -5
+        elif self.action == 8:
+            self.xDelta = -5
+            self.yDelta = -5
+        elif self.action == 9:
+            self.rotation -= 6
             self.xDelta = 0
             self.yDelta = 0
-        elif self.action == 7:
+        elif self.action == 10:
+            self.rotation += 6
+            self.xDelta = 0
+            self.yDelta = 0
+        elif self.action == 11:
             self.xDelta = 0
             self.yDelta = 0
             self.direct = self.rotation % 360 - 180
